@@ -30,11 +30,3 @@ entryPoints:
           scheme: https
   https:
     address: ":443"
-
-  portainer:
-    address: ":9000"
-    http:
-      redirections:
-        entryPoint:
-          to: https
-          scheme: https
