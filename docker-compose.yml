@@ -1,29 +1,5 @@
 version: "3.8"
 services:
-
-  
-  #===================== https://portainer.docker.localhost/#!/1/docker/containers
-  portainer:
-    image: portainer/portainer-ce
-    container_name: portainer
-    command: -H unix:///var/run/docker.sock
-    restart: always 
-    depends_on: 
-      - traefik
-    ports:
-      - "9090:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./docker/data/portainer:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.entrypoints=http,https"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.docker.localhost`)"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-      - "traefik.http.routers.portainer.tls=true"
-
   #===================== https://traefik.docker.localhost
   traefik:
     image: traefik:2.5
@@ -42,7 +18,40 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik=true"
-   
+  #===================== https://portainer.docker.localhost
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+    depends_on: 
+      - traefik
+    ports:
+      - "9090:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./docker/data/portainer:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.entrypoints=http,https"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.docker.localhost`)"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+  #===================== https://registry.docker.localhost
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "5000:5000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.registry.entrypoints=http,https"
+      - "traefik.http.routers.registry.rule=Host(`registry.docker.localhost`)"
+      - "traefik.http.routers.registry.tls=true"
+      - "traefik.http.services.registry.loadbalancer.server.port=5000"
+    volumes:
+      - ./docker/data/registry:/var/lib/registry
   #=====================
   openssl:
     build: ./docker/openssl
