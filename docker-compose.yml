@@ -38,20 +38,6 @@ services:
       - "traefik.http.routers.portainer.rule=Host(`portainer.docker.localhost`)"
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-  #===================== https://registry.docker.localhost
-  registry:
-    image: registry:2
-    container_name: registry
-    ports:
-      - "5000:5000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.registry.entrypoints=http,https"
-      - "traefik.http.routers.registry.rule=Host(`registry.docker.localhost`)"
-      - "traefik.http.routers.registry.tls=true"
-      - "traefik.http.services.registry.loadbalancer.server.port=5000"
-    volumes:
-      - ./docker/data/registry:/var/lib/registry
   #=====================
   openssl:
     build: ./docker/openssl
